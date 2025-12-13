@@ -1,0 +1,23 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /now-admin
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+
+# Logging Configuration
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    root: INFO
+    "[org.springframework.security]": DEBUG
+    "[org.springframework.boot.security]": WARN
+    "[com.now.now_admin]": DEBUG
+
+spring:
+  profiles:
+    active: dev
