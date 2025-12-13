@@ -17,7 +17,6 @@ logging:
     "[org.springframework.security]": DEBUG
     "[org.springframework.boot.security]": WARN
     "[com.now.now_admin]": DEBUG
-
 spring:
   profiles:
     active: dev
