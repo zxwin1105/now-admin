@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.now.admin.common.domain.vo.LoginRsp;
 import com.now.admin.service.auth.common.security.CustomPhoneCodeAuthenticationToken;
 import com.now.admin.service.auth.domain.LoginUserDetail;
-import com.now.admin.service.auth.domain.SysUser;
 import com.now.admin.service.auth.domain.SysUserAuth;
 import com.now.admin.service.auth.domain.param.LoginUserParam;
 import com.now.admin.service.auth.service.AuthService;
 import com.now.admin.service.auth.service.SysUserAuthService;
-import com.now.admin.service.auth.service.SysUserService;
+import com.now.admin.service.sys.domain.SysUser;
+import com.now.admin.service.sys.service.SysUserService;
+
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -55,10 +56,10 @@ public class AuthServiceImpl implements AuthService {
             }
         };
 
-        if(authentication.isAuthenticated()){
+        if (authentication.isAuthenticated()) {
             // 认证成功，返回登录结果
-            LoginUserDetail details =(LoginUserDetail) authentication.getDetails();
-            if(details == null){
+            LoginUserDetail details = (LoginUserDetail) authentication.getDetails();
+            if (details == null) {
                 throw new BadCredentialsException("Invalid credentials");
             }
 
@@ -74,15 +75,14 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Optional<LoginUserDetail> loadUserByAccount(String account) {
-        if(account.isBlank()){
+        if (account.isBlank()) {
             return Optional.empty();
         }
         LoginUserDetail loginUser = new LoginUserDetail();
         // 查询认证信息
         SysUserAuth sysUserAuth = sysUserAuthService.getOne(
-                new LambdaQueryWrapper<SysUserAuth>().eq(SysUserAuth::getIdentifier, account)
-        );
-        if(sysUserAuth == null){
+                new LambdaQueryWrapper<SysUserAuth>().eq(SysUserAuth::getIdentifier, account));
+        if (sysUserAuth == null) {
             return Optional.empty();
         }
         // 查询用户信息
@@ -97,25 +97,24 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Optional<LoginUserDetail> loadUserById(Long userId) {
-        if(userId == null){
+        if (userId == null) {
             return Optional.empty();
         }
-        
+
         // 查询用户信息
         SysUser sysUser = sysUserService.getById(userId);
-        if(sysUser == null){
+        if (sysUser == null) {
             return Optional.empty();
         }
-        
+
         LoginUserDetail loginUser = new LoginUserDetail();
         BeanUtils.copyProperties(sysUser, loginUser);
-        
+
         // 查询认证信息
         SysUserAuth sysUserAuth = sysUserAuthService.getOne(
-                new LambdaQueryWrapper<SysUserAuth>().eq(SysUserAuth::getUserId, userId)
-        );
+                new LambdaQueryWrapper<SysUserAuth>().eq(SysUserAuth::getUserId, userId));
         loginUser.setSysUserAuth(sysUserAuth);
-        
+
         return Optional.of(loginUser);
     }
 }
