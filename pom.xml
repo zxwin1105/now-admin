@@ -44,9 +44,16 @@
 	</repositories>
 	
 	<dependencies>
+
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webmvc</artifactId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 		
 		<!-- Spring Boot Security Starter: Spring Security集成支持 -->
@@ -112,7 +119,6 @@
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
-
     </dependencies>
 
 	<build>

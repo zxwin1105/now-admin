@@ -9,6 +9,7 @@ import com.now.admin.service.auth.domain.param.LoginUserParam;
 import com.now.admin.service.auth.service.AuthService;
 import com.now.admin.service.auth.service.SysUserAuthService;
 import com.now.admin.service.sys.domain.SysUser;
+import com.now.admin.service.sys.provider.SysUserProvider;
 import com.now.admin.service.sys.service.SysUserService;
 
 import jakarta.annotation.Resource;
@@ -30,7 +31,7 @@ public class AuthServiceImpl implements AuthService {
     private SysUserAuthService sysUserAuthService;
 
     @Resource
-    private SysUserService sysUserService;
+    private SysUserProvider sysUserProvider;
 
     @Resource
     private AuthenticationManager authenticationManager;
@@ -88,7 +89,11 @@ public class AuthServiceImpl implements AuthService {
         // 查询用户信息
 
         Long userId = sysUserAuth.getUserId();
-        SysUser sysUser = sysUserService.getById(userId);
+        Optional<SysUser> sysUserOptional = sysUserProvider.getById(userId);
+        if (sysUserOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        SysUser sysUser = sysUserOptional.get();
         BeanUtils.copyProperties(sysUser, loginUser);
         loginUser.setSysUserAuth(sysUserAuth);
 
@@ -102,10 +107,11 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 查询用户信息
-        SysUser sysUser = sysUserService.getById(userId);
-        if (sysUser == null) {
+        Optional<SysUser> sysUserOptional = sysUserProvider.getById(userId);
+        if (sysUserOptional.isEmpty()) {
             return Optional.empty();
         }
+        SysUser sysUser = sysUserOptional.get();
 
         LoginUserDetail loginUser = new LoginUserDetail();
         BeanUtils.copyProperties(sysUser, loginUser);
