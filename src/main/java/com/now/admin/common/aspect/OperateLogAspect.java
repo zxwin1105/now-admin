@@ -1,7 +1,15 @@
 package com.now.admin.common.aspect;
 
-import org.aopalliance.intercept.Joinpoint;
+
+
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.LogRecord;
 
 /**
  * 操作日志切面
@@ -19,7 +27,7 @@ import org.springframework.stereotype.Component;
  * 要被日志切面记录，必须遵循Controller的命名规范
  * 即：Controller的方法名必须以add、delete、update、query、export、import开头
  */
-@Aspects
+@Aspect
 @Component
 public class OperateLogAspect {
 
@@ -40,7 +48,7 @@ public class OperateLogAspect {
      * 
      * @param joinPoint 连接点，用于获取方法执行信息
      */
-    @After("execution(* com.now.admin.**.controller.*.*(..))")
+    @After("execution(* com.now.admin.*.*.controller.*.*(..))")
     public void logOperate(JoinPoint joinPoint) {
         // === 过滤Controller中不需要执行日志方法 ===
         String methodName = joinPoint.getSignature().getName();
@@ -51,13 +59,10 @@ public class OperateLogAspect {
 
         // === 记录操作日志 ===
 
-        // 从SS中获取操作用户信息
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        // 从SecurityContext中获取操作用户信息
 
-        // 从@Operation注解中获取操作类型、操作描述等信息
-        Operation operation = joinPoint.getSignature().getAnnotation(Operation.class);
-        String operateType = operation.type();
-        String operateDesc = operation.desc();
+        // 获取方法上的Operation注解
+
     }
 
     /**
@@ -69,5 +74,30 @@ public class OperateLogAspect {
     private boolean needLog(String methodName) {
         return LOG_METHODS_PREFIX.stream().anyMatch(methodName::startsWith);
     }
+    
+    /**
+     * 根据方法名获取操作类型
+     *
+     * @param methodName 方法名
+     * @return 操作类型
+     */
+    private String getOperateTypeByMethodName(String methodName) {
+        if (methodName.startsWith("add")) {
+            return "新增";
+        } else if (methodName.startsWith("delete")) {
+            return "删除";
+        } else if (methodName.startsWith("update")) {
+            return "修改";
+        } else if (methodName.startsWith("query")) {
+            return "查询";
+        } else if (methodName.startsWith("export")) {
+            return "导出";
+        } else if (methodName.startsWith("import")) {
+            return "导入";
+        }
+        return "其他";
+    }
+    
+
 
 }

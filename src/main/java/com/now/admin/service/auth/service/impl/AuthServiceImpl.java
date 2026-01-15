@@ -2,6 +2,7 @@ package com.now.admin.service.auth.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.now.admin.common.domain.vo.LoginRsp;
+import com.now.admin.service.auth.common.exception.AuthenticateException;
 import com.now.admin.service.auth.common.security.CustomPhoneCodeAuthenticationToken;
 import com.now.admin.service.auth.domain.LoginUserDetail;
 import com.now.admin.service.auth.domain.SysUserAuth;
@@ -61,9 +62,9 @@ public class AuthServiceImpl implements AuthService {
             // 认证成功，返回登录结果
             LoginUserDetail details = (LoginUserDetail) authentication.getDetails();
             if (details == null) {
-                throw new BadCredentialsException("Invalid credentials");
+                throw new AuthenticateException("认证失败");
             }
-
+            // todo 异步任务记录登录日志
             return LoginRsp.builder()
                     .id(details.getId())
                     .userId(details.getUserId())
@@ -71,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
                     .refreshToken(tokenService.generateRefreshToken(details.getId()))
                     .build();
         }
-        throw new BadCredentialsException("Invalid credentials");
+        throw new AuthenticateException("认证失败");
     }
 
     @Override

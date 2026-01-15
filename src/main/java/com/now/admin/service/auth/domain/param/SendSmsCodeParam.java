@@ -1,5 +1,6 @@
 package com.now.admin.service.auth.domain.param;
 
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
