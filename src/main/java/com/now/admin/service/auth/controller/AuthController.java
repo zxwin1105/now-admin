@@ -35,7 +35,8 @@ public class AuthController {
     @Operation(summary = "用户名密码登录", description = "传统的用户名密码登录方式")
     @PostMapping("/login")
     public Result<LoginRsp> login(@Valid @RequestBody LoginUserParam loginUserParam) {
-        return Result.success(authService.authenticate(loginUserParam));
+        // 空方法，实际登录逻辑在LoginAuthenticationFilter中
+        return null;
     }
     
     @Operation(summary = "发送短信验证码", description = "向指定手机号发送验证码")

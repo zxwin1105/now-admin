@@ -1,6 +1,5 @@
 package com.now.admin.service.auth.common.security;
 
-import com.now.admin.service.auth.common.exception.AuthenticateException;
 import com.now.admin.service.auth.domain.LoginUserDetail;
 import com.now.admin.service.auth.domain.SysUserAuth;
 import com.now.admin.service.auth.service.AuthService;
@@ -56,7 +55,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 return passwordAuthenticationToken;
             }
         }
-        throw new BadCredentialsException("登录失败");
+        // 登录失败请情况，直接抛出异常会被ss捕获并处理,mvc无法获取异常
+        throw new BadCredentialsException("用户名或密码错误");
     }
 
     private Authentication authenticateByPhoneCode(Authentication authentication) {

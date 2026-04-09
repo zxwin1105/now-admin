@@ -43,20 +43,25 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginRsp authenticate(LoginUserParam loginUserParam) {
         LoginUserParam.LoginTypeEnum loginType = loginUserParam.getType();
-
-        // 根据登录类型进行不同认证，获取认证结果authentication
-        Authentication authentication = switch (loginType) {
-            case LoginUserParam.LoginTypeEnum.PASSWORD -> {
-                Authentication usernameToken = new UsernamePasswordAuthenticationToken(loginUserParam.getAccount(),
-                        loginUserParam.getSecret());
-                yield authenticationManager.authenticate(usernameToken);
-            }
-            case LoginUserParam.LoginTypeEnum.PHONE_CODE -> {
-                Authentication PhoneCodeToken = new CustomPhoneCodeAuthenticationToken(loginUserParam.getAccount(),
-                        loginUserParam.getSecret());
-                yield authenticationManager.authenticate(PhoneCodeToken);
-            }
-        };
+        Authentication authentication = null;
+        try {
+            // 根据登录类型进行不同认证，获取认证结果authentication
+            authentication = switch (loginType) {
+                case LoginUserParam.LoginTypeEnum.PASSWORD -> {
+                    Authentication usernameToken = new UsernamePasswordAuthenticationToken(loginUserParam.getAccount(),
+                            loginUserParam.getSecret());
+                    yield authenticationManager.authenticate(usernameToken);
+                }
+                case LoginUserParam.LoginTypeEnum.PHONE_CODE -> {
+                    Authentication PhoneCodeToken = new CustomPhoneCodeAuthenticationToken(loginUserParam.getAccount(),
+                            loginUserParam.getSecret());
+                    yield authenticationManager.authenticate(PhoneCodeToken);
+                }
+            };
+        } catch (BadCredentialsException e) {
+            // ⭐⭐⭐ 这里抛你自己的异常，全局异常能抓到
+            throw new AuthenticateException("账号或密码不正确");
+        }
 
         if (authentication.isAuthenticated()) {
             // 认证成功，返回登录结果
