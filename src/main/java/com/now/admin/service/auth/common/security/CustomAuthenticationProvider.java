@@ -1,5 +1,6 @@
 package com.now.admin.service.auth.common.security;
 
+import com.now.admin.service.auth.common.exception.AuthenticateException;
 import com.now.admin.service.auth.domain.LoginUserDetail;
 import com.now.admin.service.auth.domain.SysUserAuth;
 import com.now.admin.service.auth.service.AuthService;
@@ -55,7 +56,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 return passwordAuthenticationToken;
             }
         }
-        throw new BadCredentialsException("Invalid credentials");
+        throw new BadCredentialsException("登录失败");
     }
 
     private Authentication authenticateByPhoneCode(Authentication authentication) {

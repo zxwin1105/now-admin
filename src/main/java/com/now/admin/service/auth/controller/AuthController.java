@@ -46,9 +46,12 @@ public class AuthController {
         return Result.success("验证码已发送，测试码: " + code);
     }
 
-    @GetMapping("/get")
-    public Result<LoginUserDetail> getUser(){
+    @Operation(summary = "获取用户信息", description = "向指定手机号发送验证码")
+    @GetMapping("/get/{id}")
+    public Result<LoginUserDetail> queryUser(@PathVariable String id) {
         System.out.println("get");
         return Result.success(AuthContextHolder.getCurrentUser());
     }
+
+
 }

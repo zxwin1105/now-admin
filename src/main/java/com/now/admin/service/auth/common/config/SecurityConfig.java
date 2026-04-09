@@ -53,7 +53,7 @@ public class SecurityConfig {
                         // 配置Swagger相关路径需要认证
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**",
                                 "/swagger-ui.html")
-                        .authenticated()
+                        .permitAll()
                         // 配置需要ADMIN角色的路径
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
