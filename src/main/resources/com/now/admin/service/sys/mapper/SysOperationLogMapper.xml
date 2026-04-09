@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.now.admin.service.sys.mapper.SysOperationLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.now.admin.service.sys.domain.SysOperationLog">
+            <id property="id" column="id" />
+            <result property="userId" column="user_id" />
+            <result property="username" column="username" />
+            <result property="operateType" column="operate_type" />
+            <result property="operation" column="operation" />
+            <result property="operateDesc" column="operate_desc" />
+            <result property="operateParams" column="operate_params" />
+            <result property="operateResult" column="operate_result" />
+            <result property="ip" column="ip" />
+            <result property="userAgent" column="user_agent" />
+            <result property="operateTime" column="operate_time" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,username,operate_type,operation,operate_desc,
+        operate_params,operate_result,ip,user_agent,operate_time
+    </sql>
+</mapper>
