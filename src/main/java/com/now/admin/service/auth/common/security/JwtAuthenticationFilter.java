@@ -1,6 +1,5 @@
 package com.now.admin.service.auth.common.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.now.admin.common.constant.AppStatusEnum;
 import com.now.admin.common.domain.Result;
 import com.now.admin.service.auth.common.exception.AuthenticateException;
@@ -20,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +43,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Lazy
     @Resource
     private AuthService authService;
+
+    @Resource
+    private JsonMapper jsonMapper;
     
     /**
      * Token请求头名称
@@ -119,13 +122,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * 处理异常，返回JSON格式的错误信息
      */
     private void handleException(HttpServletResponse response, Integer code, String message) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         
         Result<String> result = Result.fail(code, message);
-        String jsonResult = objectMapper.writeValueAsString(result);
+        String jsonResult = jsonMapper.writeValueAsString(result);
         response.getWriter().write(jsonResult);
     }
 

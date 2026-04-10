@@ -65,6 +65,12 @@
             <version>${springdoc.version}</version>
         </dependency>
 
+        <!-- Jackson 支持 Java 8 Date/Time (LocalDateTime等) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
         <!-- lombok -->
         <dependency>
 			<groupId>org.projectlombok</groupId>

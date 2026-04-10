@@ -1,13 +1,12 @@
 package com.now.admin.service.auth.common.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.now.admin.common.domain.Result;
 import com.now.admin.common.domain.vo.LoginRsp;
+import com.now.admin.common.util.SpringUtil;
 import com.now.admin.service.auth.common.exception.AuthenticateException;
 import com.now.admin.service.auth.domain.LoginUserDetail;
 import com.now.admin.service.auth.domain.param.LoginUserParam;
 import com.now.admin.service.auth.service.impl.TokenService;
-import jakarta.annotation.Resource;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,7 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 
@@ -24,6 +23,8 @@ import java.io.IOException;
 public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private TokenService tokenService;
+
+    private final static JsonMapper jsonMapper = SpringUtil.getBean(JsonMapper.class);
 
     public void setTokenService(TokenService tokenService) {
         this.tokenService = tokenService;
@@ -39,7 +40,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
             // 读取 JSON
-            LoginUserParam param = new ObjectMapper().readValue(request.getInputStream(), LoginUserParam.class);
+            LoginUserParam param = jsonMapper.readValue(request.getInputStream(), LoginUserParam.class);
 
             // 创建 Token（支持你的多类型登录）
             Authentication authToken;
@@ -66,7 +67,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
             throw new AuthenticateException("认证失败");
         }
 
-        LoginRsp.builder()
+        LoginRsp rsp = LoginRsp.builder()
                 .id(details.getId())
                 .userId(details.getUserId())
                 .token(tokenService.generateToken(details.getId()))
@@ -75,8 +76,8 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         // 返回 JSON
         response.setContentType("application/json;charset=utf-8");
         try {
-            Result result = Result.success(authResult);
-            new ObjectMapper().writeValue(response.getOutputStream(), result);
+            Result result = Result.success(rsp);
+            jsonMapper.writeValue(response.getOutputStream(), result);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -89,7 +90,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
         try {
             Result result = Result.fail(401, "账号或密码不正确");
-            new ObjectMapper().writeValue(response.getOutputStream(), result);
+            jsonMapper.writeValue(response.getOutputStream(), result);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

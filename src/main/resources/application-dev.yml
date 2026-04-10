@@ -2,9 +2,9 @@ spring:
 # 数据库链接
   datasource:
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: pg1105
-    url: jdbc:postgresql://localhost:5432/now_admin?currentSchema=admin
+    username: now
+    password: now1105
+    url: jdbc:postgresql://124.220.133.65:55432/now_admin?currentSchema=public
 
 
 # mybatis-plus
