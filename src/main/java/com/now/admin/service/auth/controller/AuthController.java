@@ -2,13 +2,12 @@ package com.now.admin.service.auth.controller;
 
 import com.now.admin.common.domain.Result;
 import com.now.admin.common.domain.vo.LoginRsp;
-import com.now.admin.service.auth.common.util.AuthContextHolder;
-import com.now.admin.service.auth.domain.LoginUserDetail;
 import com.now.admin.service.auth.domain.param.LoginUserParam;
 import com.now.admin.service.auth.domain.param.RegisterUserParam;
 import com.now.admin.service.auth.domain.param.SendSmsCodeParam;
 import com.now.admin.service.auth.service.AuthService;
 import com.now.admin.service.auth.service.SmsCodeService;
+import com.now.admin.service.auth.util.SecurityContextUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -22,7 +21,7 @@ public class AuthController {
 
     @Resource
     private AuthService authService;
-    
+
     @Resource
     private SmsCodeService smsCodeService;
 
@@ -38,7 +37,7 @@ public class AuthController {
         // 空方法，实际登录逻辑在LoginAuthenticationFilter中
         return null;
     }
-    
+
     @Operation(summary = "发送短信验证码", description = "向指定手机号发送验证码")
     @PostMapping("/sms/send")
     public Result<String> sendSmsCode(@Valid @RequestBody SendSmsCodeParam param) {
@@ -47,12 +46,9 @@ public class AuthController {
         return Result.success("验证码已发送，测试码: " + code);
     }
 
-    @Operation(summary = "获取用户信息", description = "向指定手机号发送验证码")
     @GetMapping("/get/{id}")
-    public Result<LoginUserDetail> queryUser(@PathVariable String id) {
-        System.out.println("get");
-        return Result.success(AuthContextHolder.getCurrentUser());
+    public Result<String> queryUser(@PathVariable String id) {
+        System.out.println("get" + id + SecurityContextUtil.getCurrentUser());
+        return Result.success(id);
     }
-
-
 }

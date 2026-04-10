@@ -38,6 +38,10 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
     // 1. 解析前端 JSON 登录参数
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        if (request.getMethod().equals("OPTIONS")) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return null;
+        }
         try {
             // 读取 JSON
             LoginUserParam param = jsonMapper.readValue(request.getInputStream(), LoginUserParam.class);
