@@ -5,7 +5,10 @@ import com.now.admin.service.sys.domain.SysUser;
 import com.now.admin.service.sys.mapper.SysUserMapper;
 import com.now.admin.service.sys.service.SysUserService;
 
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 /**
  * @author zhaixinwei
@@ -16,4 +19,21 @@ import org.springframework.stereotype.Service;
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         implements SysUserService {
 
+    @Resource
+    private SysUserMapper sysUserMapper;
+
+    @Override
+    public boolean saveUser(SysUser sysUser) {
+        return false;
+    }
+
+    @Override
+    public boolean removeUserById(Long id) {
+        return false;
+    }
+
+    @Override
+    public boolean modifyUser(SysUser sysUser) {
+        return false;
+    }
 }
