@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.now.admin.service.sys.mapper.SysRelationMapper">
+
+    <resultMap id="BaseResultMap" type="com.now.admin.service.sys.domain.SysRelation">
+            <id property="id" column="id" />
+            <result property="sourceId" column="source_id" />
+            <result property="targetId" column="target_id" />
+            <result property="relationType" column="relation_type" />
+            <result property="createdTime" column="created_time" />
+            <result property="updatedTime" column="updated_time" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,source_id,target_id,relation_type,created_time,updated_time
+    </sql>
+</mapper>
