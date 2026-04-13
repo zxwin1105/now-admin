@@ -18,10 +18,6 @@ public class LogRecord {
      */
     private Long id;
 
-    /**
-     * 用户ID
-     */
-    private String userId;
 
     /**
      * 操作用户名

@@ -22,7 +22,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -71,8 +73,7 @@ public class AuthServiceImpl implements AuthService {
             }
             // todo 异步任务记录登录日志
             return LoginRsp.builder()
-                    .id(details.getId())
-                    .userId(details.getUserId())
+                    .userId(details.getId())
                     .token(tokenService.generateToken(details.getId()))
                     .refreshToken(tokenService.generateRefreshToken(details.getId()))
                     .build();
@@ -93,7 +94,6 @@ public class AuthServiceImpl implements AuthService {
             return Optional.empty();
         }
         // 查询用户信息
-
         Long userId = sysUserAuth.getUserId();
         Optional<SysUser> sysUserOptional = sysUserProvider.getById(userId);
         if (sysUserOptional.isEmpty()) {
@@ -102,6 +102,20 @@ public class AuthServiceImpl implements AuthService {
         SysUser sysUser = sysUserOptional.get();
         BeanUtils.copyProperties(sysUser, loginUser);
         loginUser.setSysUserAuth(sysUserAuth);
+
+        // 查询用户权限和角色信息
+        Optional<Map<String, Set<String>>> userRBAC = sysUserProvider.getUserRBAC(userId);
+        if (userRBAC.isPresent()){
+            Map<String, Set<String>> rbacMap = userRBAC.get();
+            Set<String> roles = rbacMap.get("roles");
+            Set<String> perms = rbacMap.get("perms");
+            loginUser.setPerms(perms);
+            loginUser.setRoles(roles);
+        }else{
+            loginUser.setRoles(Set.of());
+            loginUser.setPerms(Set.of());
+        }
+
 
         return Optional.of(loginUser);
     }
@@ -127,6 +141,21 @@ public class AuthServiceImpl implements AuthService {
                 new LambdaQueryWrapper<SysUserAuth>().eq(SysUserAuth::getUserId, userId));
         loginUser.setSysUserAuth(sysUserAuth);
 
+        // 查询用户权限和角色信息
+        Optional<Map<String, Set<String>>> userRBAC = sysUserProvider.getUserRBAC(userId);
+        if (userRBAC.isPresent()){
+            Map<String, Set<String>> rbacMap = userRBAC.get();
+            Set<String> roles = rbacMap.get("roles");
+            Set<String> perms = rbacMap.get("perms");
+            loginUser.setPerms(perms);
+            loginUser.setRoles(roles);
+        }else{
+            loginUser.setRoles(Set.of());
+            loginUser.setPerms(Set.of());
+        }
+
         return Optional.of(loginUser);
     }
+
+
 }

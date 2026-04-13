@@ -1,6 +1,7 @@
 package com.now.admin.service.auth.common.util;
 
 import com.now.admin.service.auth.domain.LoginUserDetail;
+import lombok.Lombok;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -68,15 +69,7 @@ public class AuthContextHolder {
         return user != null ? user.getId() : null;
     }
 
-    /**
-     * 获取当前登录用户的userId
-     * 
-     * @return userId，未登录返回null
-     */
-    public static String getCurrentUserIdString() {
-        LoginUserDetail user = getCurrentUser();
-        return user != null ? user.getUserId() : null;
-    }
+
 
     /**
      * 获取当前登录用户的用户名
@@ -102,19 +95,6 @@ public class AuthContextHolder {
         return Objects.equals(id, currentUserId);
     }
 
-    /**
-     * 验证指定userId是否为当前登录用户
-     * 
-     * @param userId 要验证的userId
-     * @return true-是当前用户，false-不是当前用户或未登录
-     */
-    public static boolean isCurrentUser(String userId) {
-        if (userId == null || userId.isBlank()) {
-            return false;
-        }
-        String currentUserId = getCurrentUserIdString();
-        return Objects.equals(userId, currentUserId);
-    }
 
     /**
      * 要求当前用户必须已登录，否则抛出异常
@@ -142,15 +122,5 @@ public class AuthContextHolder {
         }
     }
 
-    /**
-     * 要求当前用户必须是指定用户，否则抛出异常
-     * 
-     * @param userId 要求的userId
-     * @throws IllegalStateException 当前用户未登录或不是指定用户
-     */
-    public static void requireCurrentUser(String userId) {
-        if (!isCurrentUser(userId)) {
-            throw new IllegalStateException("无权限访问其他用户的数据");
-        }
-    }
+
 }

@@ -50,7 +50,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             SysUserAuth sysUserAuth = loginUser.getSysUserAuth();
             if (passwordEncoder.matches(secret, sysUserAuth.getCredential())) {
                 // 密码匹配
-                UsernamePasswordAuthenticationToken passwordAuthenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, null);
+                UsernamePasswordAuthenticationToken passwordAuthenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
                 passwordAuthenticationToken.setDetails(loginUser);
                 return passwordAuthenticationToken;
             }

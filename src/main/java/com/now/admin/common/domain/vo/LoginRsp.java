@@ -7,9 +7,8 @@ import lombok.Data;
 @Data
 public class LoginRsp{
 
-    private Long id;
 
-    private String userId;
+    private Long userId;
 
     private String refreshToken;
 

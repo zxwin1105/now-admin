@@ -72,8 +72,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         }
 
         LoginRsp rsp = LoginRsp.builder()
-                .id(details.getId())
-                .userId(details.getUserId())
+                .userId(details.getId())
                 .token(tokenService.generateToken(details.getId()))
                 .refreshToken(tokenService.generateRefreshToken(details.getId()))
                 .build();

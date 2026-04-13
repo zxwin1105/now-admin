@@ -6,7 +6,6 @@
 
     <resultMap id="BaseResultMap" type="com.now.admin.service.sys.domain.SysUser">
             <id property="id" column="id" />
-            <result property="userId" column="user_id" />
             <result property="username" column="username" />
             <result property="avatar" column="avatar" />
             <result property="gender" column="gender" />
@@ -19,7 +18,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,username,avatar,gender,status,
+        id,username,avatar,gender,status,
         deleted_flag,birthday,lunar_calendar,created_time,updated_time
     </sql>
 </mapper>

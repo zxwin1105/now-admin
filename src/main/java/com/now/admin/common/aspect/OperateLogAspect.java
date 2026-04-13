@@ -139,7 +139,7 @@ public class OperateLogAspect {
         if (loginUserDetailOptional.isPresent()) {
             LoginUserDetail loginUserDetail = loginUserDetailOptional.get();
 
-            logRecord.setUserId(loginUserDetail.getUserId());
+            logRecord.setId(loginUserDetail.getId());
             logRecord.setUsername(loginUserDetail.getUsername());
             logRecord.setIp(loginUserDetail.getIp());
             logRecord.setUserAgent(loginUserDetail.getUserAgent());

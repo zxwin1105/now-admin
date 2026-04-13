@@ -21,12 +21,6 @@ public class SysUser {
     private Long id;
 
     /**
-     * 系统生成，用于唯一标识用户
-     */
-    @TableField(value = "user_id")
-    private String userId;
-
-    /**
      * 用户名
      */
     @TableField(value = "username")
