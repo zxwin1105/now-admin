@@ -11,8 +11,8 @@
             <result property="operateType" column="operate_type" />
             <result property="operation" column="operation" />
             <result property="operateDesc" column="operate_desc" />
-            <result property="operateParams" column="operate_params" />
-            <result property="operateResult" column="operate_result" />
+            <result property="operateParams" column="operate_params" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler" />
+            <result property="operateResult" column="operate_result" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"  />
             <result property="ip" column="ip" />
             <result property="userAgent" column="user_agent" />
             <result property="operateTime" column="operate_time" />

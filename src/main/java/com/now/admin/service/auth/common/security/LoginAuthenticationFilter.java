@@ -1,7 +1,9 @@
 package com.now.admin.service.auth.common.security;
 
+import com.now.admin.common.config.SecretKeyConfig;
 import com.now.admin.common.domain.Result;
 import com.now.admin.common.domain.vo.LoginRsp;
+import com.now.admin.common.util.RsaUtil;
 import com.now.admin.common.util.SpringUtil;
 import com.now.admin.service.auth.common.exception.AuthenticateException;
 import com.now.admin.service.auth.domain.LoginUserDetail;
@@ -26,6 +28,8 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
 
     private final static JsonMapper jsonMapper = SpringUtil.getBean(JsonMapper.class);
 
+    private SecretKeyConfig secretKeyConfig = SpringUtil.getBean(SecretKeyConfig.class);
+
     public void setTokenService(TokenService tokenService) {
         this.tokenService = tokenService;
     }
@@ -45,7 +49,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         try {
             // 读取 JSON
             LoginUserParam param = jsonMapper.readValue(request.getInputStream(), LoginUserParam.class);
-
+            param.setSecret(RsaUtil.decrypt(param.getSecret(),secretKeyConfig.getPrivateKeyStr()));
             // 创建 Token（支持你的多类型登录）
             Authentication authToken;
             if (param.getType() == LoginUserParam.LoginTypeEnum.PASSWORD) {

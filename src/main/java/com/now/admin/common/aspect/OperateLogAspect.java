@@ -71,18 +71,22 @@ public class OperateLogAspect {
                    "execution(* com.now.admin.*.*.controller.*.import*(..))",
         returning = "result")
     public void logOperate(JoinPoint joinPoint, Object result) {
-        // === 记录操作日志 ===
-        LogRecord logRecord = new LogRecord();
+        try{
+            // === 记录操作日志 ===
+            LogRecord logRecord = new LogRecord();
 
-        // 从SecurityContext中获取操作用户信息
-        populateOptUser(logRecord);
-        // 获取方法上的Operation注解和参数信息
-        populateOpt(joinPoint, logRecord);
+            // 从SecurityContext中获取操作用户信息
+            populateOptUser(logRecord);
+            // 获取方法上的Operation注解和参数信息
+            populateOpt(joinPoint, logRecord);
 
-        logRecord.setOperateResult(JsonUtil.toJson(result));
-        // 设置操作时间
-        logRecord.setOperateTime(LocalDateTime.now());
-        saveRecord(logRecord);
+            logRecord.setOperateResult(JsonUtil.toJson(result));
+            // 设置操作时间
+            logRecord.setOperateTime(LocalDateTime.now());
+            saveRecord(logRecord);
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
     }
 
     /**
