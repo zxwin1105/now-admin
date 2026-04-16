@@ -32,6 +32,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        // 账号认证
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
             return authenticateByPwd(authentication);
         } else if (authentication instanceof CustomPhoneCodeAuthenticationToken) {
@@ -55,7 +56,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 return passwordAuthenticationToken;
             }
         }
-        // 登录失败请情况，直接抛出异常会被ss捕获并处理,mvc无法获取异常
+        // 登录失败情况，直接抛出异常会被ss捕获并处理,mvc无法获取异常
         throw new BadCredentialsException("用户名或密码错误");
     }
 

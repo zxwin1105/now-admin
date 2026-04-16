@@ -2,6 +2,7 @@ package com.now.admin.service.auth.common.security;
 
 import com.now.admin.common.domain.Result;
 import com.now.admin.common.domain.vo.LoginRsp;
+import com.now.admin.common.util.RedisUtil;
 import com.now.admin.common.util.SpringUtil;
 import com.now.admin.service.auth.common.exception.AuthenticateException;
 import com.now.admin.service.auth.domain.LoginUserDetail;
@@ -25,6 +26,8 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
     private TokenService tokenService;
 
     private final static JsonMapper jsonMapper = SpringUtil.getBean(JsonMapper.class);
+
+    private final static RedisUtil redisUtil = SpringUtil.getBean(RedisUtil.class);
 
     public void setTokenService(TokenService tokenService) {
         this.tokenService = tokenService;
@@ -71,6 +74,10 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
             throw new AuthenticateException("认证失败");
         }
 
+        // 缓存登录用户
+        redisUtil.set("login:user:"+details.getId(), details);
+
+        // 响应信息
         LoginRsp rsp = LoginRsp.builder()
                 .userId(details.getId())
                 .token(tokenService.generateToken(details.getId()))

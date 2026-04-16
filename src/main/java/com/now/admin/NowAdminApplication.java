@@ -3,7 +3,10 @@ package com.now.admin;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ConfigurableApplicationContext;
+import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 
@@ -13,7 +16,7 @@ public class NowAdminApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext run = SpringApplication.run(NowAdminApplication.class, args);
-        System.out.println(run.getBean(JsonMapper.class));
+//        System.out.println(run.getBean(ObjectMapper.class));
     }
 
 }

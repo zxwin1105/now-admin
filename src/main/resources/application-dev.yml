@@ -5,7 +5,28 @@ spring:
     username: now
     password: now1105
     url: jdbc:postgresql://124.220.133.65:55432/now_admin?currentSchema=public
+  # Redis
+  data:
+    redis:
+      host: 124.220.133.65
+      port: 56379
+      password: now1105
+      database: 0
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 10
+          min-idle: 0
+          max-wait: 5000ms
 
+  # SpringCache 配置
+  cache:
+    type: redis
+    redis:
+      time-to-live: 7200000  # 全局默认过期时间 2小时
+      cache-null-values: true # 允许缓存null
+      use-key-prefix: true    # 使用key前缀
+      key-prefix: "cache:"    # 前缀
 
 # mybatis-plus
 mybatis-plus:
