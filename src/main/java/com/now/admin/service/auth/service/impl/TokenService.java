@@ -11,6 +11,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -30,48 +31,59 @@ public class TokenService {
 
     private final String CLAIM_KEY_USER_ID = "userId";
 
+    private final String CLAIM_KEY_LOGIN_FLAG = "loginFlag";
+
     private final String CLAIM_KEY_CREATED = "created";
 
 
     /**
      * 生成Token
+     *
      * @param userId 用户ID
-     * @return  Token
+     * @return Token
      */
-    public String generateToken(Long userId) {
+    public String generateToken(Long userId, String loginFlag) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USER_ID, userId);
+        claims.put(CLAIM_KEY_LOGIN_FLAG, loginFlag);
         claims.put(CLAIM_KEY_CREATED, new Date());
         return generateToken(claims, EXPIRATION);
     }
 
     /**
      * 生成刷新Token
+     *
      * @param userId 用户ID
      * @return 刷新Token
      */
-    public String generateRefreshToken(Long userId) {
+    public String generateRefreshToken(Long userId, String loginFlag) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USER_ID, userId);
+        claims.put(CLAIM_KEY_LOGIN_FLAG, loginFlag);
         claims.put(CLAIM_KEY_CREATED, new Date());
         return generateToken(claims, REFRESH_EXPIRATION);
     }
 
     /**
      * 刷新Token
+     *
      * @param token 刷新Token
      * @return Optional<String>
      */
     public Optional<String> refreshToken(String token) {
         Date expirationDateFromToken = getExpirationDateFromToken(token);
-        if(expirationDateFromToken.before(new Date())){
+        if (expirationDateFromToken.before(new Date())) {
             return Optional.empty();
         }
-        Long userId = getUserIdFromToken(token);
-        if(userId == null){
-            return Optional.empty();
-        }
-        return Optional.of(generateToken(userId));
+        String result = getClaimFromToken(token, (claims -> {
+            Long userId =(Long) claims.get(CLAIM_KEY_USER_ID);
+            String loginFlag =(String) claims.get(CLAIM_KEY_LOGIN_FLAG);
+            if (Objects.nonNull(userId) && StringUtils.hasText(loginFlag)) {
+                return generateToken(userId, loginFlag);
+            }
+            return null;
+        }));
+        return Optional.ofNullable(result);
     }
 
 
@@ -103,7 +115,7 @@ public class TokenService {
     /**
      * 验证Token是否有效
      *
-     * @param token    JWT Token
+     * @param token JWT Token
      * @return true=有效，false=无效
      */
     public boolean validateToken(String token, Long userId) {
@@ -114,6 +126,7 @@ public class TokenService {
 
     /**
      * 判断Token是否已过期
+     *
      * @param token JWT Token
      * @return true=已过期，false=未过期
      */
@@ -163,6 +176,7 @@ public class TokenService {
 
     /**
      * 从Token中获取用户ID
+     *
      * @param token JWT Token
      * @return 用户ID
      */
@@ -174,6 +188,7 @@ public class TokenService {
         }
         return (Long) userId;
     }
+
     /**
      * 从Token中获取指定claim
      *

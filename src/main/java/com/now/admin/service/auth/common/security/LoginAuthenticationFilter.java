@@ -3,9 +3,11 @@ package com.now.admin.service.auth.common.security;
 import com.now.admin.common.config.SecretKeyConfig;
 import com.now.admin.common.domain.Result;
 import com.now.admin.common.domain.vo.LoginRsp;
+import com.now.admin.common.exception.InnerCommonException;
 import com.now.admin.common.util.RsaUtil;
 import com.now.admin.common.util.RedisUtil;
 import com.now.admin.common.util.SpringUtil;
+import com.now.admin.common.util.UUIDUtil;
 import com.now.admin.service.auth.common.exception.AuthenticateException;
 import com.now.admin.service.auth.domain.LoginUserDetail;
 import com.now.admin.service.auth.domain.param.LoginUserParam;
@@ -21,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
+import java.util.UUID;
 
 
 public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -63,7 +66,9 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
             }
 
             return getAuthenticationManager().authenticate(authToken);
-        } catch (IOException e) {
+        }catch(InnerCommonException e){
+            throw new RuntimeException("rsa错误");
+        }catch (IOException e) {
             throw new RuntimeException("登录参数解析失败");
         }
     }
@@ -78,14 +83,16 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
             throw new AuthenticateException("认证失败");
         }
 
+        // 生成登录标识码
+        String loginFlag = UUIDUtil.shortUUID();
         // 缓存登录用户
         redisUtil.set("login:user:"+details.getId(), details);
 
         // 响应信息
         LoginRsp rsp = LoginRsp.builder()
                 .userId(details.getId())
-                .token(tokenService.generateToken(details.getId()))
-                .refreshToken(tokenService.generateRefreshToken(details.getId()))
+                .token(tokenService.generateToken(details.getId(), loginFlag))
+                .refreshToken(tokenService.generateRefreshToken(details.getId(), loginFlag))
                 .build();
         // 返回 JSON
         response.setContentType("application/json;charset=utf-8");

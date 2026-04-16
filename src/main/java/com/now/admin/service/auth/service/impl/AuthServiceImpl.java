@@ -74,8 +74,8 @@ public class AuthServiceImpl implements AuthService {
             // todo 异步任务记录登录日志
             return LoginRsp.builder()
                     .userId(details.getId())
-                    .token(tokenService.generateToken(details.getId()))
-                    .refreshToken(tokenService.generateRefreshToken(details.getId()))
+                    .token(tokenService.generateToken(details.getId(),""))
+                    .refreshToken(tokenService.generateRefreshToken(details.getId(), ""))
                     .build();
         }
         throw new AuthenticateException("认证失败");
