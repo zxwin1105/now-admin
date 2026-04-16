@@ -49,6 +49,12 @@ public class AuthController {
     @GetMapping("/get/{id}")
     public Result<String> queryUser(@PathVariable String id) {
         System.out.println("get" + id + SecurityContextUtil.getCurrentUser());
-        return Result.success(id);
+        return Result.success(String.valueOf(id));
+    }
+
+
+    @GetMapping("/info/test")
+    public Result<String> get(){
+        return Result.success("test");
     }
 }

@@ -1,8 +1,6 @@
 package com.now.admin.service.auth.common.config;
 
-import com.now.admin.service.auth.common.security.CustomAuthenticationProvider;
-import com.now.admin.service.auth.common.security.JwtAuthenticationFilter;
-import com.now.admin.service.auth.common.security.LoginAuthenticationFilter;
+import com.now.admin.service.auth.common.security.*;
 import com.now.admin.service.auth.service.impl.TokenService;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +37,14 @@ public class SecurityConfig {
     private CustomAuthenticationProvider customAuthenticationProvider;
 
     @Resource
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Resource
+    private JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
+    @Resource
     private TokenService tokenService;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // 登录过滤器
@@ -48,22 +53,25 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/public/**","/auth/register", "/auth/login", "/auth/sms/**").permitAll()
+                        .requestMatchers("/public/**", "/auth/register", "/auth/login", "/auth/sms/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").hasRole("SYS_ADMIN")
+                        .requestMatchers("/common/get/public-key").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                // 异常处理器
+                .exceptionHandling((exceptionHandling)->{
+                    exceptionHandling.accessDeniedHandler(jwtAccessDeniedHandler)
+                            .authenticationEntryPoint(jwtAuthenticationEntryPoint);
+                })
                 // 1. 先添加登录过滤器
                 .addFilter(loginFilter)
-
                 // 2. 再添加 JWT 校验过滤器
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 

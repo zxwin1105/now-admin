@@ -20,8 +20,26 @@ public class SecurityContextUtil {
      * @return Optional<LoginUserDetail>
      */
     public static Optional<LoginUserDetail> getCurrentUser(){
+        // 1. 先拿上下文
         SecurityContext securityContext = SecurityContextHolder.getContext();
-        Object details = securityContext.getAuthentication().getDetails();
-        return Optional.ofNullable((LoginUserDetail) details);
+        if (securityContext == null) {
+            return Optional.empty();
+        }
+
+        // 2. 再拿认证信息（关键！未登录时这里是 null）
+        Authentication authentication = securityContext.getAuthentication();
+        if (authentication == null) {
+            return Optional.empty();
+        }
+
+        // 3. 再拿详情，安全强转
+        Object principal = authentication.getPrincipal();
+
+        // 判断是否是你的用户对象
+        if (!(principal instanceof LoginUserDetail)) {
+            return Optional.empty();
+        }
+
+        return Optional.of((LoginUserDetail) principal);
     }
 }

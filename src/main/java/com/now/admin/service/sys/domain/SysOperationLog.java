@@ -1,17 +1,18 @@
 package com.now.admin.service.sys.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.time.LocalDateTime;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * 系统操作日志
+ *
  * @TableName sys_operation_log
  */
-@TableName(value ="sys_operation_log")
+@TableName(value = "sys_operation_log", autoResultMap = true)
 @Data
 public class SysOperationLog {
     /**
@@ -53,13 +54,13 @@ public class SysOperationLog {
     /**
      * 方法执行参数
      */
-    @TableField(value = "params")
+    @TableField(value = "operate_params")
     private String operateParams;
 
     /**
      * 操作执行结果
      */
-    @TableField(value = "result")
+    @TableField(value = "operate_result")
     private String operateResult;
 
     /**
@@ -69,7 +70,7 @@ public class SysOperationLog {
     private Integer ip;
 
     /**
-     * 
+     *
      */
     @TableField(value = "user_agent")
     private String userAgent;
