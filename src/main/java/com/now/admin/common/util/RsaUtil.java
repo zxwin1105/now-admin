@@ -265,6 +265,8 @@ public class RsaUtil {
             boolean isValid = verify(dataToSign, signature, publicKey);
             System.out.println("签名验证结果: " + (isValid ? "通过✓" : "失败✗"));
 
+            System.out.println(encrypt("123456", "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuqYdFeWZpuMDAl7KfLPksNI2xxy9Zc8UsfKVocYXxlveto4fBny6tBRS4sgoSn3uZyky8zGrZrWDcTFVXGZQXa/VBPjmz/TCRQXck6q3uw+jveEaHVVKjDBozytg9iI8lSUdroytQLcvsDMPcnxpfv5TZFTtOnBGvjo4hDpVWb9NG4C+jiJ7UwvD6Qde+al2oEyhUibs1J9qc9XeogPH3k8R4bIY/aL6D254iLjB/aDxXLShgWEJkB2UP14L723bwTsZeyyCJSoIT2WiEicc+3+KLmwo7BGFS+6zd5bAkXiiI7RzOGjtJiMGxeIRvwKFc8VFqDnJWOUjPcBV/lOpPwIDAQAB"));
+
         } catch (InnerCommonException e) {
             e.printStackTrace();
         }

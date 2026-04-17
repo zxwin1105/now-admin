@@ -86,7 +86,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         // 生成登录标识码
         String loginFlag = UUIDUtil.shortUUID();
         // 缓存登录用户
-        redisUtil.set("login:user:"+details.getId(), details);
+        redisUtil.hSet("login:uesr:"+details.getId(), loginFlag,details);
 
         // 响应信息
         LoginRsp rsp = LoginRsp.builder()
@@ -97,7 +97,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         // 返回 JSON
         response.setContentType("application/json;charset=utf-8");
         try {
-            Result result = Result.success(rsp);
+            Result<LoginRsp> result = Result.success(rsp);
             jsonMapper.writeValue(response.getOutputStream(), result);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -110,7 +110,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         response.setContentType("application/json;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
         try {
-            Result result = Result.fail(401, "账号或密码不正确");
+            Result<LoginRsp> result = Result.fail(401, "账号或密码不正确");
             jsonMapper.writeValue(response.getOutputStream(), result);
         } catch (IOException e) {
             throw new RuntimeException(e);

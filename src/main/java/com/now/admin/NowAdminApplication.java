@@ -15,10 +15,9 @@ import java.util.UUID;
 @MapperScan("com.now.admin.service.**.mapper")
 @SpringBootApplication
 public class NowAdminApplication {
-//
-//    public static void main(String[] args) {
-//        ConfigurableApplicationContext run = SpringApplication.run(NowAdminApplication.class, args);
-////        System.out.println(run.getBean(ObjectMapper.class));
-//    }
+
+    public static void main(String[] args) {
+        ConfigurableApplicationContext run = SpringApplication.run(NowAdminApplication.class, args);
+    }
 
 }
