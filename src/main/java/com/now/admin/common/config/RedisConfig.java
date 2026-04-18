@@ -29,7 +29,6 @@ public class RedisConfig {
         template.setKeySerializer(stringSerializer);
         template.setHashKeySerializer(stringSerializer);
 
-        // ✅ 新版本：JacksonJsonRedisSerializer（没有2！）
         JacksonJsonRedisSerializer<Object> serializer =
                 new JacksonJsonRedisSerializer<>(objectMapper, Object.class);
 

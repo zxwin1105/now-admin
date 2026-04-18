@@ -1,8 +1,11 @@
 package com.now.admin.service.auth.common.security;
 
 import com.now.admin.common.constant.AppStatusEnum;
+import com.now.admin.common.constant.RedisKeyConstant;
 import com.now.admin.common.domain.Result;
 import com.now.admin.common.util.JsonUtil;
+import com.now.admin.common.util.RedisUtil;
+import com.now.admin.service.auth.common.exception.AuthenticateException;
 import com.now.admin.service.auth.domain.LoginUserDetail;
 import com.now.admin.service.auth.service.AuthService;
 import com.now.admin.service.auth.service.impl.TokenService;
@@ -24,6 +27,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import tools.jackson.databind.json.JsonMapper;
 
+import javax.security.sasl.AuthenticationException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -42,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private AuthService authService;
 
     @Resource
-    private JsonMapper jsonMapper;
+    private RedisUtil redisUtil;
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String TOKEN_PREFIX = "Bearer ";
@@ -71,37 +75,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
+            // 验证token
+            tokenService.validateToken(token);
 
-            // 4. 解析 userId（捕获所有 Token 异常）
-            Long userId;
-            try {
-                userId = tokenService.getUserIdFromToken(token);
-            } catch (Exception e) {
-                log.warn("Token 解析失败: {}", e.getMessage());
-                responseError(response, AppStatusEnum.UNAUTHORIZED.getCode(), "Token 无效或已过期");
+            Long userId = tokenService.getUserIdFromToken(token);
+            String loginFlag = tokenService.getLoginFlagFromToken(token);
+            if(Objects.isNull(userId) || !StringUtils.hasText(loginFlag)){
+                responseError(response, AppStatusEnum.UNAUTHORIZED.getCode(), "Token 不能为空");
                 return;
             }
-
-            // 5. 已认证 → 跳过
-            if (userId == null || SecurityContextHolder.getContext().getAuthentication() != null) {
-                filterChain.doFilter(request, response);
-                return;
+            if(log.isDebugEnabled()){
+                log.debug("登录用户{}，logFlag:{}", userId, loginFlag);
             }
 
-            // 6. 查询用户
-            Optional<LoginUserDetail> userOptional = authService.loadUserById(userId);
-            if (userOptional.isEmpty()) {
+            Object object = redisUtil.hGet(RedisKeyConstant.LOGIN_USER_PREFIX + userId, loginFlag);
+            if(Objects.isNull(object)){
                 responseError(response, AppStatusEnum.UNAUTHORIZED.getCode(), "用户不存在或已禁用");
                 return;
             }
 
+            LoginUserDetail userInfo = (LoginUserDetail)  object;
+
             // 7. 构造认证对象（✅ 放完整用户对象）
-            LoginUserDetail loginUser = userOptional.get();
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(
-                            loginUser,        // ✅ 主体放完整用户
+                            userInfo,        // ✅ 主体放完整用户
                             null,
-                            loginUser.getAuthorities()
+                            userInfo.getAuthorities()
                     );
 
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -110,6 +110,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 8. 放行
             filterChain.doFilter(request, response);
 
+        } catch (AuthenticateException ae) {
+            responseError(response, ae.getCode(),ae.getMessage());
         } finally {
             // ✅【关键】请求结束清空上下文
             SecurityContextHolder.clearContext();

@@ -1,6 +1,7 @@
 package com.now.admin.service.auth.common.security;
 
 import com.now.admin.common.config.SecretKeyConfig;
+import com.now.admin.common.constant.RedisKeyConstant;
 import com.now.admin.common.domain.Result;
 import com.now.admin.common.domain.vo.LoginRsp;
 import com.now.admin.common.exception.InnerCommonException;
@@ -86,8 +87,8 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         // 生成登录标识码
         String loginFlag = UUIDUtil.shortUUID();
         // 缓存登录用户
-        redisUtil.hSet("login:uesr:"+details.getId(), loginFlag,details);
-
+//        redisUtil.hSet(RedisKeyConstant.LOGIN_USER_PREFIX +details.getId(), loginFlag,details);
+        redisUtil.set(RedisKeyConstant.LOGIN_USER_PREFIX, details);
         // 响应信息
         LoginRsp rsp = LoginRsp.builder()
                 .userId(details.getId())

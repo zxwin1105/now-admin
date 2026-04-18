@@ -10,12 +10,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.function.Function;
 
+@Slf4j
 @Service
 public class TokenService {
 
@@ -130,7 +132,7 @@ public class TokenService {
      * @param token JWT Token
      * @return true=已过期，false=未过期
      */
-    public boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) throws AuthenticateException{
         Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
@@ -155,11 +157,14 @@ public class TokenService {
         } catch (ExpiredJwtException e) {
             throw new AuthenticateException(AppStatusEnum.TOKEN_EXPIRED);
         } catch (MalformedJwtException e) {
-            throw new AuthenticateException("Token格式错误");
+            log.error("Token格式错误({})",token);
+            throw new AuthenticateException(AppStatusEnum.VALIDATE_TOKEN_FAIL);
         } catch (SignatureException e) {
-            throw new AuthenticateException("Token签名验证失败");
+            log.error("Token签名验证失败({})",token);
+            throw new AuthenticateException(AppStatusEnum.VALIDATE_TOKEN_FAIL);
         } catch (Exception e) {
-            throw new AuthenticateException("Token解析失败: " + e.getMessage());
+            log.error("Token解析失败({})",token);
+            throw new AuthenticateException(AppStatusEnum.VALIDATE_TOKEN_FAIL);
         }
     }
 
@@ -179,13 +184,19 @@ public class TokenService {
      * @param token JWT Token
      * @return 用户ID
      */
-    public Long getUserIdFromToken(String token) throws InnerCommonException {
+    public Long getUserIdFromToken(String token) throws AuthenticateException {
         Claims claims = getClaimsFromToken(token);
         Object userId = claims.get(CLAIM_KEY_USER_ID);
         if (userId instanceof Integer) {
             return ((Integer) userId).longValue();
         }
         return (Long) userId;
+    }
+
+    public String getLoginFlagFromToken(String token) throws AuthenticateException {
+        Claims claims = getClaimsFromToken(token);
+        Object loginFlag = claims.get(CLAIM_KEY_LOGIN_FLAG);
+        return String.valueOf(loginFlag);
     }
 
     /**

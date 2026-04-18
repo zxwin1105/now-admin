@@ -1,5 +1,6 @@
 package com.now.admin;
 
+import com.now.admin.common.constant.RedisKeyConstant;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
