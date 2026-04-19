@@ -18,7 +18,6 @@ spring:
           max-idle: 10
           min-idle: 0
           max-wait: 5000ms
-
   # SpringCache 配置
   cache:
     type: redis

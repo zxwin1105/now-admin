@@ -1,20 +1,17 @@
 package com.now.admin.common.config;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.core.JsonParser;
-import tools.jackson.databind.DeserializationContext;
-import tools.jackson.databind.SerializationContext;
-import tools.jackson.databind.ValueDeserializer;
-import tools.jackson.databind.ValueSerializer;
+import tools.jackson.databind.*;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import tools.jackson.databind.jsontype.PolymorphicTypeValidator;
 import tools.jackson.databind.module.SimpleModule;
-
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +21,24 @@ public class JacksonConfig {
 
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+
+//    @Bean
+    public JsonMapper jsonMapper() {
+        // ==============================
+        // Jackson 3 官方正确写法（无allowAll）
+        // ==============================
+        PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
+                .allowIfBaseType(Object.class)           // 允许所有以Object为基类的序列化
+                .allowIfSubTypeIsArray()                 // 允许数组类型
+                .allowIfSubType(Object.class)            // 允许所有子类型
+                .build();
+
+        return JsonMapper.builder()
+                .activateDefaultTyping(
+                        typeValidator,null
+                )
+                .build();
+    }
 
     @Bean
     public JsonMapperBuilderCustomizer jsonCustomizer() {

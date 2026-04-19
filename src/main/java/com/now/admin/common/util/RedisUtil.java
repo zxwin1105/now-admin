@@ -1,8 +1,12 @@
 package com.now.admin.common.util;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.stereotype.Component;
 import jakarta.annotation.Resource;
+import tools.jackson.databind.json.JsonMapper;
+
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -12,6 +16,11 @@ public class RedisUtil {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
+    private GenericJacksonJsonRedisSerializer serializer;
+    public RedisUtil(JsonMapper jsonMapper){
+
+        this.serializer = new GenericJacksonJsonRedisSerializer(jsonMapper);
+    }
     // ==================== 通用 ====================
 
     /**
@@ -64,8 +73,16 @@ public class RedisUtil {
     /**
      * 获取缓存
      */
-    public Object get(String key) {
-        return key == null ? null : redisTemplate.opsForValue().get(key);
+    public <T> T get(String key, Class<T> clazz) {
+        byte[] bytes = redisTemplate.getConnectionFactory()
+                .getConnection()
+                .get(key.getBytes());
+
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+
+        return serializer.deserialize(bytes, clazz);
     }
 
     /**
