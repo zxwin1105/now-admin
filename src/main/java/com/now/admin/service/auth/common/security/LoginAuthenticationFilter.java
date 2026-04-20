@@ -5,10 +5,7 @@ import com.now.admin.common.constant.RedisKeyConstant;
 import com.now.admin.common.domain.Result;
 import com.now.admin.common.domain.vo.LoginRsp;
 import com.now.admin.common.exception.InnerCommonException;
-import com.now.admin.common.util.RsaUtil;
-import com.now.admin.common.util.RedisUtil;
-import com.now.admin.common.util.SpringUtil;
-import com.now.admin.common.util.UUIDUtil;
+import com.now.admin.common.util.*;
 import com.now.admin.service.auth.common.exception.AuthenticateException;
 import com.now.admin.service.auth.domain.LoginUserDetail;
 import com.now.admin.service.auth.domain.param.LoginUserParam;
@@ -84,11 +81,12 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
             throw new AuthenticateException("认证失败");
         }
 
+        LoginDeviceInfoUtil.LoginInfo loginInfo = LoginDeviceInfoUtil.getLoginInfo(request);
+        System.out.println(loginInfo);
         // 生成登录标识码
         String loginFlag = UUIDUtil.shortUUID();
         // 缓存登录用户
-//        redisUtil.hSet(RedisKeyConstant.LOGIN_USER_PREFIX +details.getId(), loginFlag,details);
-        redisUtil.set(RedisKeyConstant.LOGIN_USER_PREFIX, details);
+        redisUtil.hSet(RedisKeyConstant.LOGIN_USER_PREFIX +details.getId(), loginFlag,details);
         // 响应信息
         LoginRsp rsp = LoginRsp.builder()
                 .userId(details.getId())

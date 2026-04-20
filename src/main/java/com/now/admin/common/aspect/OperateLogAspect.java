@@ -42,8 +42,8 @@ import java.util.Optional;
  * 即：Controller的方法名必须以add、delete、update、query、export、import开头
  */
 @Slf4j
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class OperateLogAspect {
 
     @Resource
@@ -62,14 +62,14 @@ public class OperateLogAspect {
      * @param joinPoint 连接点，用于获取方法执行信息
      * @param result 方法执行结果
      */
-    @AfterReturning(
-        pointcut = "execution(* com.now.admin.*.*.controller.*.add*(..)) || " +
-                   "execution(* com.now.admin.*.*.controller.*.delete*(..)) || " +
-                   "execution(* com.now.admin.*.*.controller.*.update*(..)) || " +
-                   "execution(* com.now.admin.*.*.controller.*.query*(..)) || " +
-                   "execution(* com.now.admin.*.*.controller.*.export*(..)) || " +
-                   "execution(* com.now.admin.*.*.controller.*.import*(..))",
-        returning = "result")
+//    @AfterReturning(
+//        pointcut = "execution(* com.now.admin.*.*.controller.*.add*(..)) || " +
+//                   "execution(* com.now.admin.*.*.controller.*.delete*(..)) || " +
+//                   "execution(* com.now.admin.*.*.controller.*.update*(..)) || " +
+//                   "execution(* com.now.admin.*.*.controller.*.query*(..)) || " +
+//                   "execution(* com.now.admin.*.*.controller.*.export*(..)) || " +
+//                   "execution(* com.now.admin.*.*.controller.*.import*(..))",
+//        returning = "result")
     public void logOperate(JoinPoint joinPoint, Object result) {
         try{
             // === 记录操作日志 ===

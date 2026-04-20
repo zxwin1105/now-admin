@@ -20,3 +20,6 @@ logging:
 spring:
   profiles:
     active: dev
+  web:
+    resources:
+      add-mappings: false

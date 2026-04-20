@@ -2,6 +2,7 @@ package com.now.admin.service.auth.service;
 
 import com.now.admin.service.auth.domain.SysUserAuth;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.now.admin.service.sys.domain.SysUser;
 
 /**
 * @author zhaixinwei

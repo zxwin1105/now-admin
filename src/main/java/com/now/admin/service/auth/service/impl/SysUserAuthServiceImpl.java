@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.now.admin.service.auth.domain.SysUserAuth;
 import com.now.admin.service.auth.service.SysUserAuthService;
 import com.now.admin.service.auth.mapper.SysUserAuthMapper;
+import com.now.admin.service.sys.domain.SysUser;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 /**
