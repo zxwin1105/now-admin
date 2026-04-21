@@ -145,8 +145,7 @@ public class OperateLogAspect {
 
             logRecord.setId(loginUserDetail.getId());
             logRecord.setUsername(loginUserDetail.getUsername());
-            logRecord.setIp(loginUserDetail.getIp());
-            logRecord.setUserAgent(loginUserDetail.getUserAgent());
+
         }
     }
 

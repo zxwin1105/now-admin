@@ -15,7 +15,8 @@ public enum AppStatusEnum {
     METHOD_NOT_ALLOWED(405, "方法不允许"),
     VALIDATE_TOKEN_FAIL(406, "Token验证失败"),
     TOKEN_EXPIRED(407, "Token已过期"),
-    SERVER_ERROR(500, "服务器内部错误");
+    SERVER_ERROR(500, "服务器内部错误"),
+    OTHER_ERROR(600, "其他错误");
 
 
     @Getter

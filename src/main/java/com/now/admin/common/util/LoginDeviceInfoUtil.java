@@ -1,6 +1,7 @@
 package com.now.admin.common.util;
 
 
+import com.now.admin.common.exception.InnerCommonException;
 import eu.bitwalker.useragentutils.UserAgent;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
@@ -13,7 +14,9 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Objects;
 
 /**
  * 登录用户 工具类
@@ -27,10 +30,18 @@ public class LoginDeviceInfoUtil {
     private static final Ip2Region ip2Region;
 
     static {
+        ClassLoader classLoader = LoginDeviceInfoUtil.class.getClassLoader();
 
         try {
-            // 指定为 v4 配置
+            URL v4 = classLoader.getResource("ip2region_v4.xdb");
+            URL v6 = classLoader.getResource("ip2region_v6.xdb");
+            if(Objects.isNull(v4) || Objects.isNull(v6)){
+                throw new InnerCommonException("找不到ip2region文件路径");
+            }
 
+            String v4Path = v4.getPath();
+            String v6Path = v6.getPath();
+            // 指定为 v4 配置
             final Config v4Config = Config.custom()
                     .setCachePolicy(Config.VIndexCache)     // 指定缓存策略:  NoCache / VIndexCache / BufferCache
                     .setSearchers(15)                       // 设置初始化的查询器数量
@@ -38,7 +49,7 @@ public class LoginDeviceInfoUtil {
                     // .setXdbInputStream(InputStream)      // 设置 v4 xdb 文件的 inputstream 对象
                     // .setXdbFile(File)                    // 设置 v4 xdb File 对象
                     // .setFairLock(boolean)                // 设置 ReentrantLock 是否使用公平锁
-                    .setXdbPath("ip2region_v4.xdb")    // 设置 v4 xdb 文件的路径
+                    .setXdbPath(v4Path)    // 设置 v4 xdb 文件的路径
                     .asV4();
             // 2, 创建 v6 的配置：指定缓存策略和 v6 的 xdb 文件路径
 
@@ -49,7 +60,7 @@ public class LoginDeviceInfoUtil {
                     // .setXdbInputStream(InputStream)      // 设置 v6 xdb 文件的 inputstream 对象
                     // .setXdbFile(File)                    // 设置 v6 xdb File 对象
                     // .setFairLock(boolean)                // 设置 ReentrantLock 是否使用公平锁
-                    .setXdbPath("ip2region_v6.xdb")    // 设置 v6 xdb 文件的路径
+                    .setXdbPath(v6Path)    // 设置 v6 xdb 文件的路径
                     .asV6();    // 指定为 v6 配置
             ip2Region = Ip2Region.create(v4Config,v6Config);
         } catch (IOException e) {
@@ -61,8 +72,8 @@ public class LoginDeviceInfoUtil {
         }
     }
 
-    public static LoginInfo getLoginInfo(HttpServletRequest request) {
-        LoginInfo info = new LoginInfo();
+    public static deviceInfo getLoginInfo(HttpServletRequest request) {
+        deviceInfo info = new deviceInfo();
         String ip = getRealIp(request);
         info.setIp(ip);
         info.setLocation(getLocation(ip));
@@ -114,7 +125,7 @@ public class LoginDeviceInfoUtil {
     }
 
     @Data
-    public static class LoginInfo {
+    public static class deviceInfo {
         private String ip;
         private String location;
         private String os;

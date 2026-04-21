@@ -1,6 +1,7 @@
 package com.now.admin.service.auth.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.now.admin.common.util.LoginDeviceInfoUtil;
 import lombok.Data;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -44,21 +45,6 @@ public class LoginUserDetail implements UserDetails {
     private LocalDateTime loginTime;
 
     /**
-     * IP
-     */
-    private String ip;
-
-    /**
-     * 浏览器
-     */
-    private String userAgent;
-
-    /**
-     * 设备
-     */
-    private String device;
-
-    /**
      * 用户认证信息
      */
     @JsonIgnore
@@ -73,6 +59,11 @@ public class LoginUserDetail implements UserDetails {
      * 用户角色信息
      */
     private Set<String> roles;
+
+    /**
+     * 用户登录设备信息
+     */
+    private LoginDeviceInfoUtil.deviceInfo deviceInfo;
 
 
     @Override

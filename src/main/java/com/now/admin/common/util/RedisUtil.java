@@ -25,6 +25,8 @@ public class RedisUtil {
 
     /**
      * 指定缓存过期时间
+     * @param key key
+     * @param time 过期时间，s
      */
     public boolean expire(String key, long time) {
         try {
@@ -182,6 +184,21 @@ public class RedisUtil {
     public boolean hSet(String key, String item, Object value) {
         try {
             redisTemplate.opsForHash().put(key, item, value);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 向hash放一个值
+     */
+    public boolean hSet(String key, String item, Object value, long expireTime) {
+        try {
+            redisTemplate.opsForHash().put(key, item, value);
+            if(expireTime> 0){
+                expire(key, expireTime);
+            }
             return true;
         } catch (Exception e) {
             return false;

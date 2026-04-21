@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -18,14 +19,16 @@ import java.util.Objects;
 /**
  * JWT 认证失败处理接口
  */
+@Slf4j
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+        log.error(authException.getCause().getMessage());
         response.setContentType("application/json,charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        ServletOutputStream outputStream =response.getOutputStream();
+        ServletOutputStream outputStream = response.getOutputStream();
         System.out.println(authException.getMessage());
         Result<String> result = Result.fail(AppStatusEnum.UNAUTHORIZED.getCode(),
                 AppStatusEnum.UNAUTHORIZED.getMessage());

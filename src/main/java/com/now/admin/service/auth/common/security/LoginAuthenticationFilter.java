@@ -13,6 +13,7 @@ import com.now.admin.service.auth.service.impl.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Setter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,17 +27,17 @@ import java.util.UUID;
 
 public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+    @Setter
     private TokenService tokenService;
 
     private final static JsonMapper jsonMapper = SpringUtil.getBean(JsonMapper.class);
 
     private final static RedisUtil redisUtil = SpringUtil.getBean(RedisUtil.class);
 
-    private SecretKeyConfig secretKeyConfig = SpringUtil.getBean(SecretKeyConfig.class);
+    private final SecretKeyConfig secretKeyConfig = SpringUtil.getBean(SecretKeyConfig.class);
 
-    public void setTokenService(TokenService tokenService) {
-        this.tokenService = tokenService;
-    }
+    public static final Long LONG_USER_EXPIRE_TIME = 60 * 24 * 7L  ;
+
 
     public LoginAuthenticationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
@@ -62,7 +63,6 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
                 // 你的短信验证码 Token
                 authToken = new CustomPhoneCodeAuthenticationToken(param.getAccount(), param.getSecret());
             }
-
             return getAuthenticationManager().authenticate(authToken);
         }catch(InnerCommonException e){
             throw new RuntimeException("rsa错误");
@@ -81,12 +81,12 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
             throw new AuthenticateException("认证失败");
         }
 
-        LoginDeviceInfoUtil.LoginInfo loginInfo = LoginDeviceInfoUtil.getLoginInfo(request);
-        System.out.println(loginInfo);
+        LoginDeviceInfoUtil.deviceInfo loginInfo = LoginDeviceInfoUtil.getLoginInfo(request);
+        details.setDeviceInfo(loginInfo);
         // 生成登录标识码
         String loginFlag = UUIDUtil.shortUUID();
         // 缓存登录用户
-        redisUtil.hSet(RedisKeyConstant.LOGIN_USER_PREFIX +details.getId(), loginFlag,details);
+        redisUtil.hSet(RedisKeyConstant.LOGIN_USER_PREFIX +details.getId(), loginFlag, details, LONG_USER_EXPIRE_TIME);
         // 响应信息
         LoginRsp rsp = LoginRsp.builder()
                 .userId(details.getId())

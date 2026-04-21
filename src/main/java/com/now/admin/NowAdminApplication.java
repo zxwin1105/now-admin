@@ -12,5 +12,6 @@ public class NowAdminApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext run = SpringApplication.run(NowAdminApplication.class, args);
+
     }
 }

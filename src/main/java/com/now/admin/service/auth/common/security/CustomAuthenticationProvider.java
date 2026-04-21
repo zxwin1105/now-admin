@@ -1,5 +1,8 @@
 package com.now.admin.service.auth.common.security;
 
+import com.now.admin.common.constant.AppStatusEnum;
+import com.now.admin.common.constant.SystemStatusConstant;
+import com.now.admin.common.exception.InnerCommonException;
 import com.now.admin.service.auth.domain.LoginUserDetail;
 import com.now.admin.service.auth.domain.SysUserAuth;
 import com.now.admin.service.auth.service.AuthService;
@@ -14,6 +17,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -49,8 +53,15 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if (loginUserOptional.isPresent()) {
             LoginUserDetail loginUser = loginUserOptional.get();
             SysUserAuth sysUserAuth = loginUser.getSysUserAuth();
+
+            // 判断账号状态是否异常
+            if(Objects.isNull(loginUser.getStatus())){
+                throw new InnerCommonException(AppStatusEnum.SERVER_ERROR.getCode(),
+                        AppStatusEnum.SERVER_ERROR.getMessage());
+            }
+            SystemStatusConstant.validStatus(loginUser.getStatus());
+            // 密码匹配
             if (passwordEncoder.matches(secret, sysUserAuth.getCredential())) {
-                // 密码匹配
                 UsernamePasswordAuthenticationToken passwordAuthenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
                 passwordAuthenticationToken.setDetails(loginUser);
                 return passwordAuthenticationToken;
