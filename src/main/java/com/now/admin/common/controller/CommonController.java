@@ -22,22 +22,8 @@ public class CommonController {
     private SecretKeyConfig secretKeyConfig;
 
     @GetMapping("/get/public-key")
-    public Result<String> getPublicKey(){
+    public Result<String> getPublicKey() {
         return Result.success(secretKeyConfig.getPublicKeyStr());
     }
 
-    private final ErrorAttributes errorAttributes;
-
-    public CommonController(ErrorAttributes errorAttributes) {
-        this.errorAttributes = errorAttributes;
-    }
-
-    @RequestMapping("/error")
-    public ResponseEntity<Map<String, Object>> error(WebRequest request) {
-        Map<String, Object> error = errorAttributes.getErrorAttributes(request, ErrorAttributeOptions.defaults());
-        HttpStatus status = HttpStatus.valueOf((int) error.get("status"));
-
-        // 404 直接返回 JSON，不再走静态资源
-        return ResponseEntity.status(status).body(error);
-    }
 }

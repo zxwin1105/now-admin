@@ -63,6 +63,7 @@ public class LoginUserDetail implements UserDetails {
     /**
      * 用户登录设备信息
      */
+    @JsonIgnore
     private LoginDeviceInfoUtil.deviceInfo deviceInfo;
 
 

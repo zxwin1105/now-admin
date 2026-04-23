@@ -90,7 +90,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             Object object = redisUtil.hGet(RedisKeyConstant.LOGIN_USER_PREFIX + userId, loginFlag);
             if(Objects.isNull(object)){
-                responseError(response, AppStatusEnum.UNAUTHORIZED.getCode(), "用户不存在或已禁用");
+                responseError(response, AppStatusEnum.UNAUTHORIZED.getCode(), "登录过期");
                 return;
             }
 

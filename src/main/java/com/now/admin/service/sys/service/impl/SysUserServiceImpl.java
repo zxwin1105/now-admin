@@ -1,6 +1,7 @@
 package com.now.admin.service.sys.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.now.admin.service.auth.provider.AuthProvider;
 import com.now.admin.service.sys.domain.SysUser;
 import com.now.admin.service.sys.mapper.SysUserMapper;
 import com.now.admin.service.sys.service.SysUserService;
@@ -22,6 +23,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     @Resource
     private SysUserMapper sysUserMapper;
 
+    @Resource
+    private AuthProvider authProvider;
+
     @Override
     public boolean saveUser(SysUser sysUser) {
         return false;
@@ -36,4 +40,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     public boolean modifyUser(SysUser sysUser) {
         return false;
     }
+
+    @Override
+    public SysUser getUserById(Long id) {
+        return getById(id);
+    }
+
 }

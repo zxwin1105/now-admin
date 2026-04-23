@@ -31,5 +31,6 @@ public interface SysUserService extends IService<SysUser> {
      */
     boolean modifyUser(SysUser sysUser);
 
+    SysUser getUserById(Long id);
 
 }

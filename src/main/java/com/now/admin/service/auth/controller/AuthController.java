@@ -20,9 +20,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     @Resource
-    private AuthService authService;
-
-    @Resource
     private SmsCodeService smsCodeService;
 
     @Operation(summary = "用户注册", description = "通过用户名密码注册新用户")
@@ -44,17 +41,5 @@ public class AuthController {
         String code = smsCodeService.sendSmsCode(param.getPhone());
         // 测试环境返回验证码，生产环境不应返回
         return Result.success("验证码已发送，测试码: " + code);
-    }
-
-    @GetMapping("/get/{id}")
-    public Result<String> queryUser(@PathVariable String id) {
-        System.out.println("get" + id + SecurityContextUtil.getCurrentUser());
-        return Result.success(String.valueOf(id));
-    }
-
-
-    @GetMapping("/info/test")
-    public Result<String> get(){
-        return Result.success("test");
     }
 }
